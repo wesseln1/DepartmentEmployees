@@ -220,5 +220,181 @@ namespace Departments_and_Employees.Data
 
             // when this method is finished we can look in the database and see the new department.
         }
+        public void UpdateEmployee()
+        {
+            //string id, string employeeFirstName, string employeeLastName, string employeeDepartmentId
+
+
+            Console.WriteLine("--------------");
+
+
+            var employeeRepo = new EmployeeRepository();
+            var allEmployees = employeeRepo.GetAllEmployees();
+
+            foreach (var employee in allEmployees)
+            {
+                Console.WriteLine($"{employee.Id}. {employee.FirstName} {employee.LastName}");
+            }
+            Console.WriteLine("--------------");
+            Console.WriteLine();
+            Console.WriteLine("What employee would you like to edit?");
+            Console.WriteLine();
+            var id = Console.ReadLine();
+
+            while (id != "")
+            {
+                Console.Clear();
+                Console.WriteLine("What would you like to update?");
+                Console.WriteLine();
+                Console.WriteLine("1. First Name");
+                Console.WriteLine("2. Last Name");
+                Console.WriteLine("3. Department");
+                Console.WriteLine();
+
+                var option = Console.ReadLine();
+
+                var parsedId = Int32.Parse(id);
+                if(option == "1")
+                {
+                    Console.Clear();
+                    Console.WriteLine("Edit First Name");
+
+                    var employeeUpdatedFirstName = Console.ReadLine();
+                    if (employeeUpdatedFirstName != "")
+                    {
+
+                        var updatingEmployee = new Employee() { FirstName = employeeUpdatedFirstName };
+
+                        using (SqlConnection conn = Connection)
+                        {
+                            conn.Open();
+                            using (SqlCommand cmd = conn.CreateCommand())
+                            {
+                                cmd.CommandText = @"UPDATE Employee
+                                             SET FirstName = @firstName
+                                             WHERE Id = @id";
+                                cmd.Parameters.Add(new SqlParameter("@firstName", updatingEmployee.FirstName));
+                                cmd.Parameters.Add(new SqlParameter("@id", parsedId));
+
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                    }
+                }
+                else if(option == "2")
+                {
+                    Console.Clear();
+                    Console.WriteLine("Edit Last Name");
+
+                    var employeeUpdatedLastName = Console.ReadLine();
+
+                    if (employeeUpdatedLastName != "")
+                    {
+
+                        var updatingEmployee = new Employee() { LastName = employeeUpdatedLastName };
+
+                        using (SqlConnection conn = Connection)
+                        {
+                            conn.Open();
+                            using (SqlCommand cmd = conn.CreateCommand())
+                            {
+                                cmd.CommandText = @"UPDATE Employee
+                                             SET FirstName = @lastName
+                                             WHERE Id = @id";
+                                cmd.Parameters.Add(new SqlParameter("@lastName", updatingEmployee.LastName));
+                                cmd.Parameters.Add(new SqlParameter("@id", parsedId));
+
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                    }
+                }
+                else if (option == "3")
+                {
+                    Console.Clear();
+                    var departmentRepo = new DepartmentRepository();
+
+                        var allDepartments = departmentRepo.GetAllDepartments();
+
+                        foreach (var depo in allDepartments)
+                        {
+                            Console.WriteLine($"{depo.Id}. {depo.DeptName}");
+                        }
+                        Console.WriteLine();
+                        Console.WriteLine("What department do you want to move them to?");
+
+                        var newId = Console.ReadLine();
+                    
+                    if (newId != "")
+                    {
+                        var employeeUpdatedDepartmentId = Int32.Parse(newId);
+                        var updatingEmployee = new Employee() { DepartmentId = employeeUpdatedDepartmentId };
+
+                        using (SqlConnection conn = Connection)
+                        {
+                            conn.Open();
+                            using (SqlCommand cmd = conn.CreateCommand())
+                            {
+                                cmd.CommandText = @"UPDATE Employee
+                                         SET DepartmentId = @departmentId
+                                         WHERE Id = @id";
+                                cmd.Parameters.Add(new SqlParameter("@departmentId", updatingEmployee.DepartmentId));
+                                cmd.Parameters.Add(new SqlParameter("@id", parsedId));
+
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            };
+        }
+        public void UpdateDepartmentId(string id)
+        {
+            Console.Clear();
+            Console.WriteLine("Edit Department ID");
+
+            if(id != "")
+            {
+                var parsedId = Int32.Parse(id);
+
+                var updatingEmployee = new Employee() { DepartmentId = parsedId };
+
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = @"UPDATE Employee
+                                             SET DepartmentId = @departmentId
+                                             WHERE Id = @id";
+                        cmd.Parameters.Add(new SqlParameter("@departmentId", updatingEmployee.DepartmentId));
+                        cmd.Parameters.Add(new SqlParameter("@id", parsedId));
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+        }
+        public void DeleteEmployee(string id)
+        {
+            if (id != "")
+            {
+                var parsedEmployeeId = Int32.Parse(id);
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = "DELETE FROM Employee WHERE Id = @id";
+                        cmd.Parameters.Add(new SqlParameter("@id", parsedEmployeeId));
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+        }
     }
 }
