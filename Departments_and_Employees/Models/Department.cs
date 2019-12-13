@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Departments_and_Employees.Models;
 
 namespace Departments_and_Employees.Models
 {
